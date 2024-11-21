@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .container h2 {
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .form-group button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .form-group button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    #emailForm {
+      display: block; 
+    }
+    #verifyForm {
+      display: none; 
+    }
+ 
+    #loading {
+      display: none; 
+      text-align: center;
+      margin-top: 20px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 4px solid rgba(0, 0, 0, 0.2);
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Email Verification</h2>
+
+    <!-- Email Submission Form -->
+    <form id="emailForm" method="post">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        <button type="button" onclick="sendVerificationEmail()">Send Verification Code</button>
+      </div>
+    </form>
+
+    <!-- Verification Code Form -->
+    <form id="verifyForm" method="post">
+      <div class="form-group">
+        <label for="code">Verification Code:</label>
+        <input type="text" id="code" name="code" placeholder="Enter the verification code" required>
+        <button type="button" onclick="verifyCode()">Verify Code</button>
+      </div>
+    </form>
+
+    <!-- Loading Animation -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Sending email...</p>
+    </div>
+
+    <!-- Message Display -->
+    <div id="message" class="message" style="display: none;"></div>
+  </div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:5000";
+
+    function displayMessage(type, text) {
+      const messageDiv = document.getElementById("message");
+      messageDiv.style.display = "block";
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = text;
+    }
+
+
+    function showLoading() {
+      const loadingDiv = document.getElementById("loading");
+      loadingDiv.style.display = "block";
+    }
+
+
+    function hideLoading() {
+      const loadingDiv = document.getElementById("loading");
+      loadingDiv.style.display = "none";
+    }
+
+
+    function showVerificationForm() {
+      const emailForm = document.getElementById("emailForm");
+      const verifyForm = document.getElementById("verifyForm");
+
+      emailForm.style.display = "none";
+      verifyForm.style.display = "block"; 
+    }
+
+    async function sendVerificationEmail() {
+      const email = document.getElementById("email").value;
+      if (!email) {
+        displayMessage("error", "Please enter an email address.");
+        return;
+      }
+
+      showLoading();
+
+      try {
+        const response = await fetch(`${API_URL}/send_verification_email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          displayMessage("success", data.message);
+          showVerificationForm(); 
+        } else {
+          displayMessage("error", data.message);
+        }
+      } catch (error) {
+        displayMessage("error", "Failed to send verification email.");
+      } finally {
+        hideLoading(); 
+      }
+    }
+
+
+    async function verifyCode() {
+      const email = document.getElementById("email").value;
+      const code = document.getElementById("code").value;
+      if (!email || !code) {
+        displayMessage("error", "Please enter both email and verification code.");
+        return;
+      }
+
+      showLoading();
+
+      try {
+        const response = await fetch(`${API_URL}/verify_code`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, code }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          displayMessage("success", data.message);
+        } else {
+          displayMessage("error", data.message);
+        }
+      } catch (error) {
+        displayMessage("error", "Failed to verify the code.");
+      } finally {
+        hideLoading(); 
+      }
+    }
+  </script>
+</body>
+</html>
