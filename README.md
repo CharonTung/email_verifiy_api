@@ -1,6 +1,6 @@
 # Email 驗證碼生成 API
 
-這是一個用於生成電子郵件驗證碼的 Web API，配有一個測試用的網頁界面，方便進行集成與測試。驗證碼可以設置有效期，提供更靈活的驗證方式。
+這是一個用於生成電子郵件驗證碼的 Web API，配有一個測試用的網頁，方便進行集成與測試。驗證碼可以設置有效期，提供更靈活的驗證方式。
 
 ## 功能
 
@@ -15,6 +15,7 @@
 
 - Python 3.x
 - Flask
+- Flask_CORS
 - SMTP 設定（例如 Gmail）
 
 ### 安裝
@@ -29,10 +30,10 @@
 2. 安裝所需的依賴：
 
    ```bash
-   pip install -r requirements.txt
+   pip install Flask Flask-CORS
    ```
 
-3. 配置環境變量（如 `.env` 文件）：
+3. 配置環境變量：
 
    ```
    SMTP_SERVER=smtp.gmail.com
@@ -48,7 +49,7 @@
    python app.py
    ```
 
-5. 在瀏覽器中訪問 `http://localhost:5000` 來使用測試界面。
+5. 在瀏覽器中訪問 http://localhost:5000 來使用測試界面。
 
 ## API 文檔
 
@@ -106,21 +107,12 @@
 
 ## 配置驗證碼有效期
 
-你可以通過 `.env` 文件中的 `VERIFICATION_CODE_EXPIRY` 變量來配置驗證碼的有效期（以秒為單位）。默認設置為 **15 分鐘**。
+你可以通過文件中的 `VERIFICATION_CODE_EXPIRY` 變量來配置驗證碼的有效期（以秒為單位）。默認設置為 **15 分鐘**。
 
 ## 測試界面
 
 本 API 附帶一個簡單的網頁界面，用於測試驗證碼的生成與驗證。只需啟動服務並訪問 `http://localhost:5000`，即可使用該界面來進行測試。
 
-## 開發
-
-### 運行開發模式
-
-使用以下命令以開發模式運行服務器，支持熱加載：
-
-```bash
-flask run --reload
-```
 
 ## 貢獻
 
@@ -132,5 +124,5 @@ flask run --reload
 
 ## 授權
 
-本項目基於 MIT 許可證進行授權。詳情請參見 [LICENSE](LICENSE) 文件。
+本項目基於 MIT 許可證進行授權。
 
